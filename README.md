@@ -4,7 +4,7 @@ This site runs at:
 
 https://copperi-demo.herokuapp.com/
 
-(It might take a short while to start up)
+*It might take a short while to start up, due to the Heroku wake up time.*
 
 Since this is a demo site, user can do more than would normally be allowed.
 
