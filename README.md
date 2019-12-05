@@ -8,7 +8,7 @@ https://copperi-demo.herokuapp.com/
 
 Since this is a demo site, user can do more than would normally be allowed.
 
-The main purpose for this site is as a practice project for https://fullstackopen.com/ course.
+The main purpose for this site is as a practice project for the [fullstack](https://fullstackopen.com/) course.
 
 Not all parts are complete as of yet.
 
