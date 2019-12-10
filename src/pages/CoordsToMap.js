@@ -5,10 +5,7 @@ import ShowCoordinates from '../components/ShowCoordinates'
 import ShowMap from '../components/ShowMap'
 
 const CoordsToMap = (props) => {
-
-  if (!props.show) {
-    return null
-  }
+  props.setCurrentPage('/mapping')
 
   return (
     <div className="container">

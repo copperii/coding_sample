@@ -1,13 +1,38 @@
-import React from 'react'
-import '../App.css'
+import React, { useState } from 'react'
+import '../styles/App.css'
 import LoginForm from '../components/LoginForm'
 import { connect } from 'react-redux'
 import { setNotification, clearNotification } from '../reducers/notificationReducer'
+import { Form } from 'react-bootstrap'
+import { Redirect } from 'react-router-dom'
 
 const Authentication = (props) => {
+  const [loggingIn, setLoggingIn] = useState('false')
 
-  if (!props.show) {
-    return null
+  const logout = async (event) => {
+    event.preventDefault()
+    props.logout()
+    return (
+      <Redirect to={props.currentPage} />
+    )
+  }
+
+  if (props.user !== '') {
+    if (loggingIn === true) {
+      return (
+        <Redirect to={props.currentPage} />
+      )
+    }
+    return (
+      <div>
+        <h3 className="heading">You are currently logged in as <i>{props.user} </i></h3>
+        <Form onSubmit={logout}>
+          <Form.Group className="form-group w-50">
+            <button className="button buttonLone" type='submit'>Logout</button>
+          </Form.Group>
+        </Form>
+      </div>
+    )
   }
 
   return (
@@ -19,11 +44,7 @@ const Authentication = (props) => {
         login={props.login}
         setToken={props.setToken}
         changeCookie={props.changeCookie}
-        setPage={props.setPage}
-        setErrorMessage={props.setErrorMessage}
-        setCurrentUser={props.setCurrentUser}
-        setMessage={props.setMessage}
-        setVariant={props.setVariant}
+        setLoggingIn={(value) => setLoggingIn(value)}
       />
     </div>
   )
@@ -32,7 +53,8 @@ const Authentication = (props) => {
 const mapStateToProps = (state) => {
   return {
     notification: state.notification,
-    filter: state.filter
+    filter: state.filter,
+    user: state.user
   }
 }
 

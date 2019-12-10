@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
-import '../App.css'
+import '../styles/App.css'
 import { connect } from 'react-redux'
 import { setNotification, clearNotification } from '../reducers/notificationReducer'
 import { setCurrentUser } from '../reducers/userReducer'
 
 const Home = (props) => {
+  props.setCurrentPage('/')
 
   useEffect(() => {
     if (props.result.data !== undefined) {
@@ -14,11 +15,7 @@ const Home = (props) => {
       }
     }
   }, [props.result.data])
-
-  if (!props.show) {
-    return null
-  }
-
+  
   return (
     <div>
       <h4 className="heading">Copperi demo site</h4>
@@ -31,12 +28,6 @@ const Home = (props) => {
         </div>} 
       </div>
       <div className="text">
-        The main purpose for this site is as a practice project for the <a href="https://fullstackopen.com"> fullstack course</a>.
-      </div>
-      <div className="text">
-        Site is built using React, Redux and GraphQL.
-      </div>
-      <div className="text">
         Since this is a demo site, you can add and delete users after login.
       </div>     
       <div className="text">
@@ -45,7 +36,6 @@ const Home = (props) => {
       <div className="text">
         <b>Note</b> Links page has some missing funtionality not implemented as of yet.
       </div>
-
     </div>
   )
 }

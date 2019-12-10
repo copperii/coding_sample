@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { Table } from 'react-bootstrap'
-import '../App.css'
+import '../styles/App.css'
 import FilterForm from '../components/FilterForm'
 import { connect } from 'react-redux'
 import { setNotification, clearNotification } from '../reducers/notificationReducer'
 import AddLinkForm from '../components/AddLinkForm'
 import Togglable from '../components/Togglable'
 import { useMutation, useApolloClient } from '@apollo/react-hooks'
-import * as Queries from '../components/Queries'
+import * as Queries from '../graphql/Queries'
 
 const Links = (props) => {
   const client = useApolloClient()
@@ -15,17 +15,14 @@ const Links = (props) => {
   const [showDetails, setShowDetails] = useState(false)
   const [link, setLink] = useState(null)
 
+  props.setCurrentPage('/links')
+
   const [deleteLink] = useMutation(Queries.DELETE_LINK, {
     onError: props.handleError,
     refetchQueries: [{ query: Queries.ALL_LINKS }]
   })
 
-  if (!props.show) {
-    return null
-  }
-
-  if (props.result.loading) {
-    props.setNotification(`should show linkmessage loading`, 'waiting', 5)
+  if (props.result.loading === true) {
     return <div> loading links...</div>
   }
 
@@ -35,9 +32,6 @@ const Links = (props) => {
       variables: {url: link }
     })
     setLink(data.allLinks)
-    const unxTime = Number(data.allLinks[0].latestChange)
-    const ls = new Date(unxTime)
-
     return null
   }
 
@@ -87,6 +81,7 @@ const Links = (props) => {
 
   const ShowLinkData = () => {
     if (filterString !== '') {
+      console.log('testpoint1')
       let f = props.result.data.allLinks.filter(filtered =>
         filtered.description.toLowerCase().includes(filterString.toLowerCase().trim()))
       return (
@@ -114,39 +109,36 @@ const Links = (props) => {
           </tbody>
         </Table>
       )
-    } else {
-      if (props.result.data.allLinks !== undefined) {
-        return (
-          <Table className="table w-auto">
-            <thead>
-              <tr>
-                <th> Link </th>
-                <th> Description </th>
-                <th> Show Details </th>
-                
-              </tr>
-            </thead>
-            <tbody>
-              {
-                props.result.data.allLinks.map(l =>
-                  <tr key={l.url}>
-                    <td>{l.url}</td>
-                    <td onClick={() => setShowDetails(!showDetails)}>{l.description}</td>
-                    <td><button className="button" onClick={() => showLink(l.url)}>Show details </button></td>
-                    
-                  </tr>
-                )}
-            </tbody>
-          </Table>
-        )}
-      else {
-        return (
-          <div>No data</div>
-          )
-      }
     }
+    if (props.result.data.allLinks !== undefined) {
+      return (
+        <Table className="table w-auto">
+          <thead>
+            <tr>
+              <th> Link </th>
+              <th> Description </th>
+              <th> Show Details </th>
+                
+            </tr>
+          </thead>
+          <tbody>
+            {
+              props.result.data.allLinks.map(l =>
+                <tr key={l.url}>
+                  <td>{l.url}</td>
+                  <td onClick={() => setShowDetails(!showDetails)}>{l.description}</td>
+                  <td><button className="button" onClick={() => showLink(l.url)}>Show details </button></td>
+                    
+                </tr>
+              )}
+          </tbody>
+        </Table>
+      )}
 
-  }
+    return (
+      <div>No data</div>
+    )
+}
 
   const addLinkFormRef = React.createRef()
   const addLinkForm = () => {
@@ -193,9 +185,7 @@ const Links = (props) => {
                 :
                 <td></td>
               }
-              
             </tr>
-           
           </tbody>
         </table>
         <div className="text"> Only logged in users are allowed to add or edit links.

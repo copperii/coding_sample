@@ -1,20 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useQuery, useMutation, useSubscription, useApolloClient } from '@apollo/react-hooks'
 import { useCookies } from 'react-cookie'
-import * as Queries from './components/Queries'
+import * as Queries from './graphql/Queries'
 import Notification from './components/Notification'
 import Home from './pages/Home'
 import Links from './pages/Links'
 import Users from './pages/Users'
+import About from './pages/About'
 import Authentication from './pages/Authentication'
 import CoordsToMap from './pages/CoordsToMap'
-import './App.css'
+import './styles/App.css'
 import { connect } from 'react-redux'
 import { setNotification, clearNotification } from './reducers/notificationReducer'
 import { setCurrentUser, clearCurrentUser } from './reducers/userReducer'
+import {
+  BrowserRouter as Router,
+  Route, Link, Redirect
+} from 'react-router-dom'
+import Nav from 'react-bootstrap/Nav'
+import Navbar from 'react-bootstrap/Navbar'
 
 const App = (props) => {
-  const [page, setPage] = useState('Home')
+  const [currentPage, setCurrentPage] = useState('/')
   const [token, setToken] = useState(null)
   const [cookies, setCookie, removeCookie] = useCookies(['cppr-app'])
   const client = useApolloClient()
@@ -23,10 +30,17 @@ const App = (props) => {
   const allLinks = useQuery(Queries.ALL_LINKS)
   const loggedInUser = useQuery(Queries.LOGGED_IN_USER)
 
+  useEffect(() => {
+    if (loggedInUser.data !== undefined) {
+      if (loggedInUser.data.loggedInUser !== null) {
+        const foundUser = loggedInUser.data.loggedInUser.username
+          props.setCurrentUser(foundUser)
+        }
+      }
+  }, [loggedInUser])
   const handleError = (error) => {
     if (error.graphQLErrors)
       error.graphQLErrors.map(({ message, locations, path }) => {
-        
         props.setNotification(`Server error '${message}'`, 'error', 6)
         return null
       })
@@ -43,18 +57,12 @@ const App = (props) => {
     const minutes = 60
     date.setTime(date.getTime() + (minutes * 60 * 1000))
     setCookie('cppr-app', 'token=' + tokenValue, { path: "/", expires: date } )
-
   }
 
   const [addUser] = useMutation(Queries.ADD_USER, {
     onError:  handleError,
     update: (store, response) => {
-      const storeData = store.readQuery({ query: Queries.ALL_USERS })
-      storeData.allUsers.push(response.data.addUser)
-      store.writeQuery({
-        query: Queries.ALL_USERS,
-        data: storeData
-      })
+      updateCacheWith(response.data.addUser)
     }
   })
 
@@ -117,69 +125,107 @@ const App = (props) => {
     removeCookie('cppr-app')
     localStorage.clear()
     client.resetStore()
-    setPage('Home')
     props.clearCurrentUser()
+    return (
+      <Redirect to={currentPage} />
+    )
   }
 
   return (
-    <div className='container'>
-      <div>
-        <button className="button buttonOnTop" onClick={() => setPage('Home')}>Home</button>
-        <button className="button buttonOnTop" onClick={() => setPage('Map')}>Map coordinates</button>
-        <button className="button buttonOnTop" onClick={() => setPage('Links')}>Links</button>
-        {
-          props.user === ''
-            ?
-            <button className="button buttonOnTop" onClick={() => setPage('Authentication')}>Login</button>
-            :
-            <React.Fragment>
-              <button className="button buttonOnTop" onClick={() => setPage('Users')}>Users</button>
-              <button className="button buttonOnTop" onClick={logout}>Logout</button>
-            </React.Fragment>
-        }
-      </div>
-     
+    <div className='container fix-jump'>
       <Notification />
-
-      <Home
-        show={page === 'Home'}
-        result={loggedInUser}
-        setPage={(page) => setPage(page)}
-      />
-
-      <CoordsToMap
-        show={page === 'Map'}
-        setPage={(page) => setPage(page)}
-      />
-
-      <Links
-        show={page === 'Links'}
-        result={allLinks}
-        setPage={(page) => setPage(page)}
-        addLink={addLink}
-        handleError={handleError}
-      />
-
-      <Users
-        show={page === 'Users'}
-        result={allUsers}
-        editUser={editUser}
-        addUser={addUser}
-        deleteUser={deleteUser}
-        changePassword={changePassword}
-        setPage={(page) => setPage(page)}
-        token={token}
-       
-      />
-      <Authentication
-        show={page === 'Authentication'}
-        login={login}
-        setToken={(token) => setToken(token)}
-        changeCookie={(tokenValue) => changeCookie(tokenValue)}
-        setPage={(page) => setPage(page)}
-      />
+      <Router>
+        <div>
+          <Navbar collapseOnSelect expand="md" bg="light" variant="light">
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+              <Nav className="mr-auto">
+                <Nav.Link href="#" as="span">
+                  <Link className="link-padding" to="/"><img src='homeicon.png' alt='home' /></Link>
+                </Nav.Link>
+                <Nav.Link href="#" as="span">
+                  <Link className="link-padding" to="/mapping">Map coordinates</Link>
+                </Nav.Link>
+                <Nav.Link href="#" as="span">
+                  {
+                    props.user === ''
+                      ?
+                      <div></div>
+                      :
+                      <Link className="link-padding" to="/users">Users</Link>
+                  }
+                </Nav.Link>
+                <Nav.Link href="#" as="span">
+                  <Link className="link-padding" to="/links">Links</Link>
+                </Nav.Link>
+                <Nav.Link href="#" as="span">
+                  <Link className="link-padding" to="/about">About</Link>
+                </Nav.Link>
+                <Nav.Link href="#" as="span">
+                   {
+                      props.user === ''
+                      ?
+                      <Link className="link-padding" to="/authentication">Login</Link>
+                      :
+                      <Link className="link-padding" to="/authentication">Logout</Link>
+                    }
+                </Nav.Link>
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
+          <Route exact path="/" render={() =>
+            <Home
+              result={loggedInUser}
+              currentPage={currentPage}
+              setCurrentPage={(page) => setCurrentPage(page)}
+            />
+          } />
+          <Route exact path="/mapping" render={() =>
+            <CoordsToMap
+              currentPage={currentPage}
+              setCurrentPage={(page) => setCurrentPage(page)}
+            />
+          } />
+          <Route exact path="/authentication" render={() =>
+            <Authentication
+              logout={logout}
+              login={login}
+              setToken={(token) => setToken(token)}
+              changeCookie={(tokenValue) => changeCookie(tokenValue)}
+              currentPage={currentPage}
+              setCurrentPage={(page) => setCurrentPage(page)}
+            />
+          } />
+          <Route exact path="/users" render={() =>
+            <Users
+              result={allUsers}
+              editUser={editUser}
+              addUser={addUser}
+              deleteUser={deleteUser}
+              changePassword={changePassword}
+              currentPage={currentPage}
+              setCurrentPage={(page) => setCurrentPage(page)}
+              token={token}
+            />
+          } />
+          <Route exact path="/links" render={() =>
+            <Links
+              result={allLinks}
+              addLink={addLink}
+              currentPage={currentPage}
+              setCurrentPage={(page) => setCurrentPage(page)}
+            />
+          } />
+          <Route exact path="/about" render={() =>
+            <About
+              result={loggedInUser}
+              currentPage={currentPage}
+              setCurrentPage={(page) => setCurrentPage(page)}
+            />
+          } />
+        </div>
+      </Router>
     </div>
-
   )
 }
 

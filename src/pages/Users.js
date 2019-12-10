@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
-import * as Queries from '../components/Queries'
+import * as Queries from '../graphql/Queries'
 import { useApolloClient } from '@apollo/react-hooks'
 import EditUserForm from '../components/EditUserForm'
 import AddUserForm from '../components/AddUserForm'
 import { Table } from 'react-bootstrap'
-import '../App.css'
+import '../styles/App.css'
 import ChangePasswordForm from '../components/ChangePasswordForm'
 import { connect } from 'react-redux'
 import { setNotification, clearNotification } from '../reducers/notificationReducer'
+import { Redirect } from 'react-router-dom'
 
 const Users = (props) => {
   const client = useApolloClient()
@@ -15,11 +16,14 @@ const Users = (props) => {
   const [editValues, setEditValues] = useState(null)
   const [showPage, setShowPage] = useState('All')
   const [allowEdit, setAllowEdit] = useState(false)
+  props.setCurrentPage('/users')
 
-  if (!props.show) {
-    return null
+  if (props.user === '') {
+    return (
+      <Redirect to='/authentication' />
+    )
   }
-
+  
   if (props.result.loading) {
     return <div> loading user data ...</div>
   }

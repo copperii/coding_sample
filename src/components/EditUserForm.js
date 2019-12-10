@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Form } from 'react-bootstrap'
-import '../App.css'
+import '../styles/App.css'
 import { connect } from 'react-redux'
 import { setNotification, clearNotification } from '../reducers/notificationReducer'
 

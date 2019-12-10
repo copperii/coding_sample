@@ -7,13 +7,6 @@ export const clearCurrentUser = () => (
   }
 )
 
-export const getCurrentUser = () => (
-  {
-    type: 'GET_USER'
-    
-  }
-)
-
 export const setCurrentUser = (user) => {
   return async dispatch => {
     dispatch({
@@ -28,8 +21,6 @@ const userReducer = (state = initialState, action) => {
     case 'SET_USER':
       state = action.user
       return [action.user]
-    case 'GET_USER':
-      return [state]
     case 'CLEAR_USER':
       state = ''
       return ''

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Form } from 'react-bootstrap'
-import '../App.css'
+import '../styles/App.css'
 import { connect } from 'react-redux'
 import { setNotification, clearNotification } from '../reducers/notificationReducer'
 
@@ -37,7 +37,7 @@ const AddLinkForm = (props) => {
             value={description}
             onChange={({ target }) => setDescription(target.value)}
           />
-          <Form.Label>genres</Form.Label>
+          <Form.Label>genres </Form.Label>
           <Form.Control
             type='text'
             value={genres}
@@ -46,7 +46,6 @@ const AddLinkForm = (props) => {
           <button className="buttonLone" type='submit'>Add this Link</button>
         </Form.Group>
       </Form>
-
     </div>
   )
 }

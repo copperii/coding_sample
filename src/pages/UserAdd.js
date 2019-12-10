@@ -1,14 +1,11 @@
 import React, { useState } from 'react'
-import * as Queries from '../components/Queries'
+import * as Queries from '../graphql/Queries'
 import { useApolloClient } from '@apollo/react-hooks'
 import AddUserForm from '../components/UserForm'
 import { connect } from 'react-redux'
 import { setNotification, clearNotification } from '../reducers/notificationReducer'
 
 const UserAdd = (props) => {
-  if (!props.show) {
-    return null
-  }
 
   return (
     <div>

@@ -15,11 +15,9 @@ const reducer = combineReducers({
   filter: filterReducer
 })
 
-
 const store = createStore(
   reducer,
   composeWithDevTools(
     applyMiddleware(thunk)))
-
 
 export default store

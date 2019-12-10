@@ -1,14 +1,20 @@
 import React, { useState } from 'react'
-import '../App.css'
+import '../styles/App.css'
 import { Form } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { setNotification, clearNotification } from '../reducers/notificationReducer'
 import { setCurrentUser } from '../reducers/userReducer'
+import { Redirect } from 'react-router-dom'
 
 const LoginForm = (props) => {
-  
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+  if (props.user !== '') {
+    return (
+      <Redirect to='/logout' />
+    )
+  }
 
   const submit = async (event) => {
     event.preventDefault()
@@ -18,11 +24,11 @@ const LoginForm = (props) => {
       })
 
       if (result) {
-        props.setPage('Home')
         const token = result.data.login.value
         props.setToken(token)
         props.changeCookie(token)
         props.setCurrentUser(username)
+        props.setLoggingIn(true)
         // Not best security practice, but good enough for demo use.
         localStorage.setItem('cppr-user-token', token)
       }
@@ -64,8 +70,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   setNotification,
   clearNotification,
-  setCurrentUser
+  setCurrentUser  
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginForm)
-
