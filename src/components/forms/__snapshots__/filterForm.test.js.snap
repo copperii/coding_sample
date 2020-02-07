@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FilterForm testing Matches the snapshot 1`] = `
+<form
+  className="sc-AykKG jknqQM"
+  data-testid="search-form"
+  onSubmit={[Function]}
+>
+  <label
+    className="sc-AykKH KUYUd"
+    data-testid="search-label"
+    htmlFor="searchInputText"
+  >
+    Filter
+  </label>
+  <input
+    className="sc-AykKF jpUFlu searchInputText"
+    data-testid="search-input"
+    defaultValue=""
+    onChange={[Function]}
+    type="Text"
+  />
+  <button
+    className="sc-AykKE iqtNKI"
+    data-testid="search-button"
+    type="submit"
+  >
+     
+    Search
+  </button>
+</form>
+`;
