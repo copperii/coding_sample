@@ -15,7 +15,7 @@
     "apollo-link-context": "^1.0.19",
     "apollo-link-http": "^1.5.15",
     "apollo-link-token-refresh": "^0.2.7",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "coordinate-parser": "^1.0.3",
     "emotion": "^10.0.27",
     "geodesy": "^2.2.0",
