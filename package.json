@@ -84,7 +84,7 @@
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-prettier": "^3.1.2",
-    "npm-watch": "^0.6.0",
+    "npm-watch": "^0.13.0",
     "prettier": "^1.19.1",
     "react-test-renderer": "^16.13.0",
     "relay-test-utils": "^16.0.0",
